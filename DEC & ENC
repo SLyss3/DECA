@@ -1,0 +1,44 @@
+import string
+
+# Define the alphabet to be used
+ALPHABET = string.ascii_uppercase
+
+def affine_cipher(text, a, b, decrypt=False):
+    """
+    Applies the affine cipher to the given text with key (a, b).
+
+    If decrypt=True, the function decrypts the text using the inverse of a.
+    """
+    result = ''
+    # Convert text to uppercase and remove non-alphabetic characters
+    text = ''.join(filter(str.isalpha, text.upper()))
+    # Calculate the modular multiplicative inverse of a if decrypting
+    if decrypt:
+        # pow(a, -1, 26) calculates the modular multiplicative inverse of a modulo 26
+        a_inverse = pow(a, -1, 26)
+    # Convert each character to a number and apply the affine cipher
+    for char in text:
+        # Convert the character to its corresponding index in the alphabet
+        num = ALPHABET.index(char)
+        # Apply the affine cipher to the index
+        transformed_num = (a_inverse * (num - b)) % 26 if decrypt else (a * num + b) % 26
+        # Convert the transformed index back to its corresponding character
+        result += ALPHABET[transformed_num]
+    return result
+
+# Prompt the user for input
+plaintext = input("Enter plaintext: ")
+a = int(input("Enter a (must be coprime with 26): "))
+b = int(input("Enter b: "))
+
+# Check that a is coprime with 26
+if pow(a, -1, 26) == None:
+    print("Error: a must be coprime with 26")
+else:
+    # Encrypt the plaintext and print the ciphertext
+    ciphertext = affine_cipher(plaintext, a, b)
+    print("Ciphertext:", ciphertext)
+
+    # Decrypt the ciphertext and print the plaintext
+    decrypted_plaintext = affine_cipher(ciphertext, a, b, decrypt=True)
+    print("Decrypted plaintext:", decrypted_plaintext)
