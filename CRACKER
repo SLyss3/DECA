@@ -1,0 +1,37 @@
+def mod_inverse(a, m):
+    # Compute the modular inverse of a modulo m, if it exists.
+    # Assumes a and m are positive integers and gcd(a, m) = 1.
+    for x in range(1, m):
+        if (a * x) % m == 1:
+            return x
+    return None
+
+def affine_crack(ciphertext):
+    # Crack the ciphertext using a brute-force approach.
+    # Assumes ciphertext is a string of uppercase letters encrypted using
+    # the affine cipher with unknown values of a and b.
+    m = 26  # Size of the alphabet
+    for a in range(1, m):
+        if mod_inverse(a, m) is None:
+            # Skip values of a that don't have an inverse
+            continue
+        for b in range(m):
+            plaintext = ""
+            a_inv = mod_inverse(a, m)
+            for c in ciphertext:
+                if c.isalpha():
+                    # Convert the letter to a number between 0 and 25
+                    c_num = ord(c) - ord('A')
+                    # Apply the decryption transformation
+                    p_num = (a_inv * (c_num - b)) % m
+                    # Convert the number back to a letter and append to plaintext
+                    plaintext += chr(p_num + ord('A'))
+                else:
+                    # Non-alphabetic characters are left unchanged
+                    plaintext += c
+            # Print the plaintext for the current value of a and b
+            print(f"a={a}, b={b}: {plaintext}")
+
+# Example usage:
+ciphertext = "IYVHZHCJBWJWGGBRQSBIPQFGWFQNVSZ"
+affine_crack(ciphertext)
